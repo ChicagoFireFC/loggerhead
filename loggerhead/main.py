@@ -34,7 +34,6 @@ class _CustomFormatter(logging.Formatter):
     def __init__(self, msg, env):
         logging.Formatter.__init__(self, msg)
         self.use_color = bool(env == "development")
-
         # print(f"use_color: {self.use_color}")
 
     def format(self, record):
@@ -63,23 +62,21 @@ class LoggerHead:
     def __init__(self, env="development"):
         # Create custom logger logging all five levels
         log_level = logging.DEBUG if env == "development" else logging.INFO
-        logger = logging.getLogger()
-        logger.setLevel(log_level)
 
         # Define format for logs
-        fmt = "%(levelname)8s:     %(message)s | (%(filename)s:%(lineno)d)"
+        fmt = "%(levelname)8s:    %(message)s | (%(filename)s:%(lineno)d)"
 
-        # Create stdout handler for logging to the console (logs all five levels)
-        stdout_handler = logging.StreamHandler()
-        stdout_handler.setLevel(log_level)
-        stdout_handler.setFormatter(_CustomFormatter(fmt, env))
+        log_handler = logging.StreamHandler()
+        log_handler.setLevel(log_level)
+        log_handler.setFormatter(_CustomFormatter(fmt, env))
 
         for logger_name in LOGGERS:
             logger = logging.getLogger(logger_name)
-            logger.setLevel(log_level)
-            logger.propagate = False
 
-            log_handler = logging.StreamHandler()
-            log_handler.setLevel(log_level)
-            log_handler.setFormatter(_CustomFormatter(fmt, env))
+            # https://stackoverflow.com/questions/7173033/duplicate-log-output-when-using-python-logging-module
+            if logger.hasHandlers():
+                logger.handlers.clear()
+
+            logger.setLevel(log_level)
             logger.addHandler(log_handler)
+            logger.propagate = False
