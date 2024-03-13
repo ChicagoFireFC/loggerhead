@@ -67,10 +67,11 @@ class LoggerHead:
     """
 
     def __init__(self, env="development"):
-        rollbar.init(
-            dbutils.secrets.get(scope="analytics", key="rollbar_access_token"),
-            env,
-        )
+        if env == "production":
+            rollbar.init(
+                dbutils.secrets.get(scope="analytics", key="rollbar_access_token"),
+                env,
+            )
 
         # Create custom logger logging all five levels
         log_level = logging.DEBUG if env == "development" else logging.INFO
@@ -84,7 +85,6 @@ class LoggerHead:
 
         rollbar_handler = RollbarHandler()
         rollbar_handler.setLevel(logging.ERROR)
-        rollbar_handler.setFormatter(_CustomFormatter(fmt, env))
 
         for logger_name in LOGGERS:
             logger = logging.getLogger(logger_name)
