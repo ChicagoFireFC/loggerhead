@@ -1,0 +1,11 @@
+name: loggerhead
+channels:
+  - conda-forge
+  - anaconda
+  - pypi
+  - defaults
+dependencies:
+  - ruff=0.2.2
+  - pip:
+    - databricks-sdk==0.21.0
+    - rollbar==0.16.3

@@ -2,7 +2,14 @@
 Logging module
 """
 
+# Needed to ignore "Undefined name `dbutils`"
+# ruff: noqa: F821
+
 import logging
+
+import rollbar
+from databricks.sdk.runtime import dbutils
+from rollbar.logger import RollbarHandler
 
 LOGGERS = [
     "",
@@ -60,6 +67,11 @@ class LoggerHead:
     """
 
     def __init__(self, env="development"):
+        rollbar.init(
+            dbutils.secrets.get(scope="analytics", key="rollbar_access_token"),
+            env,
+        )
+
         # Create custom logger logging all five levels
         log_level = logging.DEBUG if env == "development" else logging.INFO
 
@@ -69,6 +81,10 @@ class LoggerHead:
         log_handler = logging.StreamHandler()
         log_handler.setLevel(log_level)
         log_handler.setFormatter(_CustomFormatter(fmt, env))
+
+        rollbar_handler = RollbarHandler()
+        rollbar_handler.setLevel(logging.ERROR)
+        rollbar_handler.setFormatter(_CustomFormatter(fmt, env))
 
         for logger_name in LOGGERS:
             logger = logging.getLogger(logger_name)
@@ -80,3 +96,6 @@ class LoggerHead:
             logger.setLevel(log_level)
             logger.addHandler(log_handler)
             logger.propagate = False
+
+            if env == "production":
+                logger.addHandler(rollbar_handler)

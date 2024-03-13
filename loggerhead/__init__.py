@@ -1,1 +1,1 @@
-from .main import LoggerHead
+from .main import LoggerHead  # noqa: F401
