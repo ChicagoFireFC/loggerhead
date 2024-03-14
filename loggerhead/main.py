@@ -66,12 +66,21 @@ class LoggerHead:
     Custom class to set sane defaults for python logging
     """
 
+    def _print_data_frame(self, data_frame):
+        """
+        print data frame in a more visually digestable way
+        """
+        logging.info("\n" + data_frame.to_string())
+
     def __init__(self, env="development"):
         if env == "production":
             rollbar.init(
                 dbutils.secrets.get(scope="analytics", key="rollbar_access_token"),
                 env,
             )
+
+        # Add custom print_data_frame function
+        logging.print_data_frame = self._print_data_frame
 
         # Create custom logger logging all five levels
         log_level = logging.DEBUG if env == "development" else logging.INFO
