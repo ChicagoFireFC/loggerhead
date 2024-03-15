@@ -39,12 +39,18 @@ class _CustomFormatter(logging.Formatter):
     }
 
     # 23 miniumum spaces needed for CRITICAL messages (with color characters)
-    FMT = """{asctime} | {levelname:>23} | {message} | ({filename}:{lineno})"""
     DATE_FMT = "%Y-%m-%d | %H:%M:%S"
 
     def __init__(self, env):
-        logging.Formatter.__init__(self, fmt=self.FMT, datefmt=self.DATE_FMT, style="{")
-        self.use_color = bool(env == "development")
+        is_dev = env == "development"
+
+        if is_dev:
+            FMT = """{asctime} | {levelname:>23} | {message} | ({filename}:{lineno})"""
+        else:
+            FMT = """{asctime} | {levelname:>11} | {message} | ({filename}:{lineno})"""
+
+        logging.Formatter.__init__(self, fmt=FMT, datefmt=self.DATE_FMT, style="{")
+        self.use_color = is_dev
         # print(f"use_color: {self.use_color}")
 
     def format(self, record):
