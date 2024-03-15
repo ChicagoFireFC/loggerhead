@@ -38,8 +38,12 @@ class _CustomFormatter(logging.Formatter):
         "ERROR": RED,
     }
 
-    def __init__(self, msg, env):
-        logging.Formatter.__init__(self, msg)
+    # 23 miniumum spaces needed for CRITICAL messages (with color characters)
+    FMT = """{asctime} | {levelname:>23} | {message} | ({filename}:{lineno})"""
+    DATE_FMT = "%Y-%m-%d | %H:%M:%S"
+
+    def __init__(self, env):
+        logging.Formatter.__init__(self, fmt=self.FMT, datefmt=self.DATE_FMT, style="{")
         self.use_color = bool(env == "development")
         # print(f"use_color: {self.use_color}")
 
@@ -86,11 +90,9 @@ class LoggerHead:
         log_level = logging.DEBUG if env == "development" else logging.INFO
 
         # Define format for logs
-        fmt = "%(levelname)8s:    %(message)s | (%(filename)s:%(lineno)d)"
-
         log_handler = logging.StreamHandler()
         log_handler.setLevel(log_level)
-        log_handler.setFormatter(_CustomFormatter(fmt, env))
+        log_handler.setFormatter(_CustomFormatter(env))
 
         rollbar_handler = RollbarHandler()
         rollbar_handler.setLevel(logging.ERROR)
