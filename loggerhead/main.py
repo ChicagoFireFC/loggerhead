@@ -42,15 +42,13 @@ class _CustomFormatter(logging.Formatter):
     DATE_FMT = "%Y-%m-%d | %H:%M:%S"
 
     def __init__(self, env):
-        is_dev = env == "development"
-
-        if is_dev:
+        if env == "development":
             FMT = """{asctime} | {levelname:>23} | {message} | ({filename}:{lineno})"""
         else:
             FMT = """{asctime} | {levelname:>11} | {message} | ({filename}:{lineno})"""
 
         logging.Formatter.__init__(self, fmt=FMT, datefmt=self.DATE_FMT, style="{")
-        self.use_color = is_dev
+        self.use_color = env == "development"
         # print(f"use_color: {self.use_color}")
 
     def format(self, record):
