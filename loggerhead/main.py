@@ -11,7 +11,7 @@ import rollbar
 from databricks.sdk.runtime import dbutils
 from rollbar.logger import RollbarHandler
 
-LOGGERS = ["", "core", "py4j"]
+LOGGERS = ["", "core", "py4j", "pyspark"]
 
 
 class _CustomFormatter(logging.Formatter):
@@ -87,6 +87,7 @@ class LoggerHead:
 
         # Create custom logger logging all five levels
         log_level = logging.DEBUG if env == "development" or level == "DEBUG" else logging.INFO
+
 
         # Define format for logs
         log_handler = logging.StreamHandler()
