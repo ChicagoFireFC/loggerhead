@@ -75,7 +75,7 @@ class LoggerHead:
         """
         logging.info("\n" + data_frame.to_string())
 
-    def __init__(self, env="development", level="INFO"):
+    def __init__(self, env="development", level=logging.INFO):
         if env == "production":
             rollbar.init(
                 dbutils.secrets.get(scope="analytics", key="rollbar_access_token"),
@@ -86,7 +86,7 @@ class LoggerHead:
         logging.print_data_frame = self._print_data_frame
 
         # Create custom logger logging all five levels
-        log_level = logging.DEBUG if env == "development" or level == "DEBUG" else logging.INFO
+        log_level = level if level else logging.INFO
 
 
         # Define format for logs
