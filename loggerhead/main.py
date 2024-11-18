@@ -11,7 +11,7 @@ import rollbar
 from databricks.sdk.runtime import dbutils
 from rollbar.logger import RollbarHandler
 
-LOGGERS = ["", "core", "pyspark"]
+LOGGERS = ["", "core"]
 
 
 class _CustomFormatter(logging.Formatter):
