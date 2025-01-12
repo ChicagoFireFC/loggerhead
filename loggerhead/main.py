@@ -7,9 +7,7 @@ Logging module
 
 import logging
 
-import rollbar
 from databricks.sdk.runtime import dbutils
-from rollbar.logger import RollbarHandler
 
 LOGGERS = ["", "core"]
 
@@ -76,26 +74,16 @@ class LoggerHead:
         logging.info("\n" + data_frame.to_string())
 
     def __init__(self, env="development", level=logging.INFO):
-        if env == "production":
-            rollbar.init(
-                dbutils.secrets.get(scope="analytics", key="rollbar_access_token"),
-                env,
-            )
-
         # Add custom print_data_frame function
         logging.print_data_frame = self._print_data_frame
 
         # Create custom logger logging all five levels
         log_level = level if level else logging.INFO
 
-
         # Define format for logs
         log_handler = logging.StreamHandler()
         log_handler.setLevel(log_level)
         log_handler.setFormatter(_CustomFormatter(env))
-
-        rollbar_handler = RollbarHandler()
-        rollbar_handler.setLevel(logging.ERROR)
 
         for logger_name in LOGGERS:
             logger = logging.getLogger(logger_name)
@@ -107,6 +95,3 @@ class LoggerHead:
             logger.setLevel(log_level)
             logger.addHandler(log_handler)
             logger.propagate = False
-
-            if env == "production":
-                logger.addHandler(rollbar_handler)
